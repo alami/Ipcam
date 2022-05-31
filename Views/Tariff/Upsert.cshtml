@@ -1,14 +1,14 @@
-﻿@model Ipcam.Models.Tariff
+﻿@model Ipcam.Models.ViewModels.TariffVM
 
 @{ 
     var title = "Create Tariff";
 }
 
 <form method="post" enctype="multipart/form-data">
-    @if (Model.Id != 0)
+    @if (Model.Tariff.Id != 0)
     {
         title = "Edit Tariff";
-        <input asp-for="Id" hidden />
+        <input asp-for="Tariff.Id" hidden />
     }
     <div class="border p-3">
 
@@ -19,31 +19,31 @@
             <div class="col-8">
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Name"></label>
+                        <label asp-for="Tariff.Name"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <input asp-for="Tariff.Name" class="form-control" />
+                        <span asp-validation-for="Tariff.Name" class="text-danger"></span>
                     </div>
 
                 </div>
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Price"></label>
+                        <label asp-for="Tariff.Price"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Price" class="form-control" />
-                        <span asp-validation-for="Price" class="text-danger"></span>
+                        <input asp-for="Tariff.Price" class="form-control" />
+                        <span asp-validation-for="Tariff.Price" class="text-danger"></span>
                     </div>
 
                 </div>
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="Description"></label>
+                        <label asp-for="Tariff.Description"></label>
                     </div>
                     <div class="col-8">
-                        <input asp-for="Description" class="form-control" />
-                        <span asp-validation-for="Description" class="text-danger"></span>
+                        <input asp-for="Tariff.Description" class="form-control" />
+                        <span asp-validation-for="Tariff.Description" class="text-danger"></span>
                     </div>
 
                 </div>
@@ -58,25 +58,25 @@
 
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="ResolutionId"></label>
+                        <label asp-for="Tariff.ResolutionId"></label>
                     </div>
                     <div class="col-8">
-                        <select asp-for="ResolutionId" asp-items="@ViewBag.ResolutionDropDown" class="form-control">
+                        <select asp-for="Tariff.ResolutionId" asp-items="@Model.ResolutionSelectList" class="form-control">
                             <option disabled selected>--Select Resolution--</option>
                         </select>
-                        <span asp-validation-for="ResolutionId" class="text-danger"></span>
+                        <span asp-validation-for="Tariff.ResolutionId" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <div class="col-4">
-                        <label asp-for="PeriodId"></label>
+                        <label asp-for="Tariff.PeriodId"></label>
                     </div>
                     <div class="col-8">
-                        <select asp-for="PeriodId" asp-items="@ViewBag.PeriodDropDown" class="form-control">
+                        <select asp-for="Tariff.PeriodId" asp-items="@Model.PeriodSelectList" class="form-control">
                             <option disabled selected>--Select Period--</option>
                         </select>
-                        <span asp-validation-for="PeriodId" class="text-danger"></span>
+                        <span asp-validation-for="Tariff.PeriodId" class="text-danger"></span>
                     </div>
                 </div>
                 
@@ -84,7 +84,7 @@
                     <div class="col-8 offset-4 row">
 
                         <div class="col">
-                            @if (Model.Id != 0)
+                            @if (Model.Tariff.Id != 0)
                             {
                                 //update
                                 <input type="submit" class="btn btn-info w-100" value="Update" />
@@ -104,6 +104,8 @@
             </div>
             <div class="col-4">
                 @* Keep this empty *@
+                <img src="@WC.ImagePath@Model.Tariff.Image" width="100%" style="border-radius:5px; border:1px solid #bbb"
+
             </div>
         </div>
     </div>

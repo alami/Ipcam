@@ -14,12 +14,17 @@ namespace Ipcam.Models
         [Range(1, int.MaxValue)]
         public double Price { get; set; }
         public string? Image { get; set; }
+
+        
         [Display(Name = "Resolution Type")]
         public int ResolutionId { get; set; }
         [ForeignKey("ResolutionId")]
         public virtual Resolution Resolution { get; set; }
+
+
+        [Display(Name = "Period Type")]
         public int PeriodId { get; set; }
         [ForeignKey("PeriodId")]
-        public virtual Resolution Period { get; set; }
+        public virtual Period Period { get; set; }
     }
 }

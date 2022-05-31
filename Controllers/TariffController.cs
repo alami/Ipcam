@@ -1,8 +1,13 @@
 ﻿using Ipcam.Data;
 using Ipcam.Models;
+using Ipcam.Models.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Ipcam.Controllers
@@ -10,9 +15,11 @@ namespace Ipcam.Controllers
     public class TariffController : Controller
     {
         private readonly StoreContext _db;
-        public TariffController(StoreContext db)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public TariffController(StoreContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;            
         }
         public IActionResult Index()
         {
@@ -28,51 +35,98 @@ namespace Ipcam.Controllers
 
         //GET - UPSERT
         public IActionResult Upsert(int? id)
-        {
-            IEnumerable<SelectListItem> ResolutionDropDown = _db.Resolution.Select(i => new SelectListItem
+        {            
+            TariffVM tariffVM = new TariffVM()
             {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
-            ViewBag.ResolutionDropDown = ResolutionDropDown;
-
-            IEnumerable<SelectListItem> PeriodDropDown = _db.Period.Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
-            ViewBag.PeriodDropDown = PeriodDropDown;
-
-            Tariff tariff = new Tariff();
+                Tariff = new Tariff(),
+                ResolutionSelectList = _db.Resolution.Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                }),
+                PeriodSelectList = _db.Period.Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                })
+            };
             if (id == null)
             {
                 //this is for create
-                return View(tariff);
+                return View(tariffVM);
             }
             else
             {
-                tariff = _db.Tariff.Find(id);
-                if (tariff == null)
+                tariffVM.Tariff = _db.Tariff.Find(id);
+                if (tariffVM.Tariff == null)
                 {
                     return NotFound();
                 }
-                return View(tariff);
+                return View(tariffVM);
             }
         }
 
         //POST - UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(Tariff obj)
+        public IActionResult Upsert(TariffVM tariffVM)
         {
             if (ModelState.IsValid)
             {
-                _db.Tariff.Add(obj);
+                var files = HttpContext.Request.Form.Files;
+                string webRootPath = _webHostEnvironment.WebRootPath;
+
+                if (tariffVM.Tariff.Id == 0)
+                {
+                    //Creating
+                    string upload = webRootPath + WC.ImagePath;
+                    string fileName = Guid.NewGuid().ToString();
+                    string extension = Path.GetExtension(files[0].FileName);
+
+                    using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
+                    {
+                        files[0].CopyTo(fileStream);
+                    }
+
+                    tariffVM.Tariff.Image = fileName + extension;
+
+                    _db.Tariff.Add(tariffVM.Tariff);
+                }
+                else
+                {
+                    //UPDATING
+                    var objFromDb = _db.Tariff.AsNoTracking().FirstOrDefault(u => u.Id == tariffVM.Tariff.Id);
+
+                    if (files.Count > 0)
+                    {
+                        string upload = webRootPath + WC.ImagePath;
+                        string fileName = Guid.NewGuid().ToString();
+                        string extension = Path.GetExtension(files[0].FileName);
+
+                        var oldFile = Path.Combine(upload, objFromDb.Image);
+
+                        if (System.IO.File.Exists(oldFile))
+                        {
+                            System.IO.File.Delete(oldFile);
+                        }
+
+                        using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
+                        {
+                            files[0].CopyTo(fileStream);
+                        }
+
+                        tariffVM.Tariff.Image = fileName + extension;
+                    }
+                    else
+                    {
+                        tariffVM.Tariff.Image = objFromDb.Image;
+                    }
+                    _db.Tariff.Update(tariffVM.Tariff);
+                }
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(obj);
-
+            return View();
         }
 
         //GET - DELETE
