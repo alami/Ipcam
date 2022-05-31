@@ -1,6 +1,7 @@
 ﻿using Ipcam.Data;
 using Ipcam.Models;
 using Ipcam.Models.ViewModels;
+using Ipcam.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -44,6 +45,21 @@ namespace Ipcam.Controllers
 
             return View(DetailsVM);
         }
+
+        [HttpPost, ActionName("Details")]
+        public IActionResult DetailsPost(int id)
+        {
+            List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
+            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null
+                && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+            {
+                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+            }
+            shoppingCartList.Add(new ShoppingCart { TariffId = id });
+            HttpContext.Session.Set(WC.SessionCart, shoppingCartList);
+            return RedirectToAction(nameof(Index));
+        }
+
         public IActionResult Privacy()
         {
             return View();
