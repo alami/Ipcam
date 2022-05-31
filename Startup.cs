@@ -28,6 +28,7 @@ namespace Ipcam
         {
             services.AddDbContext<StoreContext>(x => x.UseSqlite
                 (_config.GetConnectionString("DefaultConnection")));
+            services.AddDistributedMemoryCache();
             services.AddHttpContextAccessor();
             services.AddSession(Options =>
             {
@@ -57,6 +58,7 @@ namespace Ipcam
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
