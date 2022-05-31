@@ -97,15 +97,18 @@
 
                         </div>
                         <div class="col">
-                            <a asp-action="Index" class="btn btn-success w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
+                            <a asp-action="Index" class="btn btn-success w-100">
+                                 Back</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-4">
                 @* Keep this empty *@
-                <img src="@WC.ImagePath@Model.Tariff.Image" width="100%" style="border-radius:5px; border:1px solid #bbb"
-
+                @if (Model.Tariff.Id != 0) { 
+                <img src="@WC.ImagePath@Model.Tariff.Image"
+                width="100%" style="border-radius:5px; border:1px solid #bbb" />
+                }
             </div>
         </div>
     </div>
@@ -115,7 +118,7 @@
 @section Scripts{
 
     @{
-        <partial name="_ValidationScriptsPartial" />
+            <partial name="_ValidationScriptsPartial" />
     }
 
 }

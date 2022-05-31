@@ -1,5 +1,8 @@
-﻿using Ipcam.Models;
+﻿using Ipcam.Data;
+using Ipcam.Models;
+using Ipcam.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,15 +15,23 @@ namespace Ipcam.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly StoreContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, StoreContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            return View();
+            HomeVM homeVM = new HomeVM()
+            {
+                Tariffs = _db.Tariff.Include(u => u.Resolution).Include(u => u.Period),
+                Resolutions = _db.Resolution,
+                Periods = _db.Period
+            };
+            return View(homeVM);
         }
 
         public IActionResult Privacy()

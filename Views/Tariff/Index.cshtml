@@ -44,8 +44,8 @@
                         <td width="20%">@obj.Name</td>
                         <td width="20%">@obj.Description</td>
                         <td width="20%">@obj.Price</td>
-                        <td width="10%">@obj.ResolutionId</td>
-                        <td width="10%">@obj.PeriodId</td>
+                        <td width="10%">@obj.Resolution.Name</td>
+                        <td width="10%">@obj.Period.Name</td>
                         <td class="text-center">
                             <div class="w-75 btn-group" role="group">
                                 <a asp-route-Id="@obj.Id" asp-action="Upsert" class="btn btn-primary mx-2">

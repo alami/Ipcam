@@ -28,6 +28,7 @@ namespace Ipcam.Controllers
             foreach (var obj in objList)
             {
                 obj.Resolution = _db.Resolution.FirstOrDefault(u => u.Id == obj.ResolutionId);
+                obj.Period = _db.Period.FirstOrDefault(u => u.Id == obj.PeriodId);
             };
 
             return View(objList);            
@@ -126,7 +127,17 @@ namespace Ipcam.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View();
+            tariffVM.ResolutionSelectList = _db.Resolution.Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+            tariffVM.PeriodSelectList = _db.Period.Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+            return View(tariffVM);
         }
 
         //GET - DELETE
@@ -136,30 +147,37 @@ namespace Ipcam.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.Resolution.Find(id);
-            if (obj == null)
+            Tariff tariff = _db.Tariff.Include(u => u.Resolution)
+                .Include(u => u.Period).FirstOrDefault(u => u.Id == id);
+            if (tariff == null)
             {
                 return NotFound();
             }
 
-            return View(obj);
+            return View(tariff);
         }
 
         //POST - DELETE
-        [HttpPost]
+        [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
-            var obj = _db.Resolution.Find(id);
+            var obj = _db.Tariff.Find(id);
             if (obj == null)
             {
                 return NotFound();
             }
-            _db.Resolution.Remove(obj);
+            string upload = _webHostEnvironment.WebRootPath + WC.ImagePath;
+            var oldFile = Path.Combine(upload, obj.Image);
+
+            if (System.IO.File.Exists(oldFile))
+            {
+                System.IO.File.Delete(oldFile);
+            }
+
+            _db.Tariff.Remove(obj);
             _db.SaveChanges();
             return RedirectToAction("Index");
-
-
         }
     }
 }
