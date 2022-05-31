@@ -33,7 +33,17 @@ namespace Ipcam.Controllers
             };
             return View(homeVM);
         }
+        public IActionResult Details(int id)
+        {
+            DetailsVM DetailsVM = new DetailsVM()
+            {
+                Tariff = _db.Tariff.Include(u => u.Resolution).Include(u => u.Period)
+                .Where(u => u.Id == id).FirstOrDefault(),
+                ExistsInCart = false
+            };
 
+            return View(DetailsVM);
+        }
         public IActionResult Privacy()
         {
             return View();
