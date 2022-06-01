@@ -12,6 +12,7 @@ namespace Ipcam.Data
         public DbSet<Resolution> Resolution { get; set; }
         public DbSet<Period> Period { get; set; }
         public DbSet<Tariff> Tariff { get; set; }
+        public DbSet<IpcamUser> IpcamUser { get; set; }
 
     }
 }
