@@ -29,7 +29,8 @@ namespace Ipcam
         {
             services.AddDbContext<StoreContext>(x => x.UseSqlite
                 (_config.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddDefaultTokenProviders().AddDefaultUI()
                 .AddEntityFrameworkStores<StoreContext>();
 
             services.AddDistributedMemoryCache();
