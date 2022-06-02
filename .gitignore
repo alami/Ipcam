@@ -4,9 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # User-specific files
-Ipcam.db
-Ipcam.db-shm
-Ipcam.db-wal
+### Ipcam.db
+### Ipcam.db-shm
+### Ipcam.db-wal
 *.rsuser
 *.suo
 *.user
